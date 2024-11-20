@@ -1,32 +1,44 @@
-import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import cors from "cors";
-import flowchartRoutes from "./routes/flowchartRoutes.js";
-import { agenda } from "./config/agenda.js";
-
-dotenv.config();
-
+const express = require('express');
+require('dotenv').config();
+const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 5000;
+const port = process.env.PORT;
+const bodyParser = require('body-parser');
+const mongoose=require('mongoose')
+const connectDb = require('./config/db');
+const flowchartRoutes = require('./routes/flowchartRoutes');
+const emailRoutes = require('./routes/emailRoutes');
+const { agenda } = require('./config/agenda');
 
-// Middleware
+
+// Initialize body-parser middleware before defining routes
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Enable CORS for all routes
 app.use(cors());
-app.use(express.json());
 
-// Routes
-app.use("/api/flowchart", flowchartRoutes);
+// Use the correct route path with a leading forward slash
 
-// Database Connection
-import connectDB from "./config/db.js";
-connectDB();
 
-// Agenda Startup
+app.use('/api/flowchart', flowchartRoutes);
+app.use('/api/email', emailRoutes);
+
+
+
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
 agenda.start().then(() => {
-  console.log("Agenda is ready!");
+  console.log('Agenda is ready!');
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+connectDb()
+  .then(() => {
+    console.log('Connection successful to MongoDB');
+    app.listen(port, () => {
+      console.log(`Server is running on http://localhost:${port}`);
+    });
+  })
+  .catch((err) => console.log('Error connecting to MongoDB'));

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
 const nodeSchema = new mongoose.Schema({
   id: String,
@@ -11,15 +11,15 @@ const edgeSchema = new mongoose.Schema({
   id: String,
   source: String,
   target: String,
+  animated: Boolean,
   label: String,
 });
 
 const flowchartSchema = new mongoose.Schema({
+  name: String,
   nodes: [nodeSchema],
   edges: [edgeSchema],
   createdAt: { type: Date, default: Date.now },
 });
 
-const Flowchart = mongoose.model("Flowchart", flowchartSchema);
-
-export default Flowchart;
+module.exports = mongoose.model('Flowchart', flowchartSchema);

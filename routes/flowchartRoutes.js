@@ -1,12 +1,8 @@
-import express from "express";
-import { saveFlowchart, scheduleEmail } from "../controllers/flowchartController.js";
-
+const express = require('express');
 const router = express.Router();
+const { saveFlowchart, getFlowcharts } = require('../controllers/flowchartController');
 
-// Save Flowchart
-router.post("/save", saveFlowchart);
+router.post('/save', saveFlowchart);
+router.get('/get', getFlowcharts);
 
-// Schedule Email
-router.post("/schedule-email", scheduleEmail);
-
-export default router;
+module.exports = router;

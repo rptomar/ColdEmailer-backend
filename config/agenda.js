@@ -1,35 +1,21 @@
-import Agenda from "agenda";
+const Agenda = require('agenda');
+require('dotenv').config();
 
 const agenda = new Agenda({
-  db: { address: process.env.MONGO_URI, collection: "agendaJobs" },
+  db: {
+    address: process.env.MONGO_URI,  // Use the updated Mongo URI from .env
+    collection: 'agendaJobs',        // Collection to store jobs
+    options: { useUnifiedTopology: true },
+  },
+  ensureIndex: false,  // Disable automatic index creation
 });
 
-agenda.define("sendEmail", async (job) => {
-  const { to, subject, body } = job.attrs.data;
-
-  // Nodemailer setup
-  const nodemailer = require("nodemailer");
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to,
-    subject,
-    text: body,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully to:", to);
-  } catch (error) {
-    console.error("Error sending email:", error);
-  }
+agenda.on('ready', async () => {
+  console.log('Agenda is ready!');
 });
 
-export { agenda };
+agenda.define('send-email', async (job) => {
+  console.log('Job is running:', job.attrs.data);
+});
+
+module.exports = { agenda };
